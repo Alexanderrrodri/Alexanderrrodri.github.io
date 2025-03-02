@@ -13,7 +13,7 @@
         <input type="text" id="title" class="form-control" placeholder="Enter Title">
         <input type="text" id="genre" class="form-control mt-2" placeholder="Enter Genre">
         <select id="status" class="form-select mt-2">
-            <option value="to read">To Read</option>
+            <option value="to experience">To Experience</option>
             <option value="in progress">In Progress</option>
             <option value="completed">Completed</option>
         </select>
@@ -48,13 +48,15 @@
     <audio id="celebrationSound" src="celebration.mp3"></audio>
     
     <script>
-        function addEntry() {
-            let title = document.getElementById('title').value;
-            let genre = document.getElementById('genre').value;
-            let status = document.getElementById('status').value;
-            let author = document.getElementById('author').value;
-            
-            if (title === '' || genre === '' || author === '') {
+        function addEntry(title = null, genre = null, author = null, status = null) {
+            // Retrieve values from input fields if not provided as arguments
+            if (!title) title = document.getElementById("title").value.trim();
+            if (!genre) genre = document.getElementById("genre").value.trim();
+            if (!status) status = document.getElementById("status").value;
+            if (!author) author = document.getElementById("author").value.trim();
+
+            // Ensure all fields are filled
+            if (!title || !genre || !author) {
                 alert("Please fill in all fields.");
                 return;
             }
@@ -67,7 +69,7 @@
                 <td>${genre}</td>
                 <td>
                     <select class="form-select" onchange="updateStatus(this)">
-                        <option value="to read">To Read</option>
+                        <option value="to experience">To Experience</option>
                         <option value="in progress">In Progress</option>
                         <option value="completed">Completed</option>
                     </select>
@@ -87,14 +89,14 @@
                 </td>
             `;
 
-            // Set the dropdown to the selected value
-            row.querySelector("select:nth-child(1)").value = status;
-            
-            // Clear input fields after adding an entry
-            document.getElementById('title').value = '';
-            document.getElementById('genre').value = '';
-            document.getElementById('status').value = 'to read';
-            document.getElementById('author').value = '';
+            // Set the status dropdown to the correct value
+            row.querySelector("select").value = status;
+
+            // Clear input fields after adding
+            document.getElementById("title").value = "";
+            document.getElementById("genre").value = "";
+            document.getElementById("author").value = "";
+            document.getElementById("status").value = "to experience";
         }
 
         function deleteEntry(button) {
@@ -105,7 +107,7 @@
         function updateStatus(select) {
             if (select.value === "completed") {
                 document.getElementById("celebrationSound").play();
-                alert("Congratulations on completing your book!");
+                alert("Congratulations on completing your book or movie!");
             }
         }
 
@@ -125,7 +127,7 @@
             let criteria = document.getElementById("sortFilter").value;
             
             if (criteria === "status") {
-                const statusOrder = { "completed": 0, "in progress": 1, "to read": 2 };
+                const statusOrder = { "completed": 0, "in progress": 1, "to experience": 2 };
                 rows.sort((a, b) => statusOrder[a.cells[2].querySelector("select").value] - statusOrder[b.cells[2].querySelector("select").value]);
             } else {
                 let columnIndex = criteria === "title" ? 0 : criteria === "author" ? 3 : criteria === "genre" ? 1 : 2;
@@ -134,6 +136,11 @@
             
             rows.forEach(row => table.appendChild(row));
         }
+
+        window.onload = function() {
+            addEntry("Dragon Ball Super: Super Hero", "Anime", "Tetsuro Kodama");
+            addEntry("Harry Potter and the Chamber of Secrets", "Fantasy", "J.K. Rowling");
+        };
     </script>
 </body>
 </html>
